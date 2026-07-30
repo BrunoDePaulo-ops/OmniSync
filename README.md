@@ -1,4 +1,19 @@
-# 📦 OmniSync
+<p align="center">
+  <img src="assets/logo.png" width="220">
+</p>
+
+<h1 align="center">OmniSync</h1>
+
+<p align="center">
+  Intelligent Inventory Automation Platform
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-17-orange">
+  <img src="https://img.shields.io/badge/PostgreSQL-16-blue">
+  <img src="https://img.shields.io/badge/Apache%20POI-Excel-success">
+  <img src="https://img.shields.io/badge/OpenPDF-PDF-red">
+</p>
 
 **OmniSync** é um softare de automação voltado para o gerenciamento de estoques. Ele lê planilhas Excel, sincroniza, atualiza e armazena em um banco de dados PostgreSQL os dados vindos do software da Microsoft, gera relatórios PDF e alerta sobre produtos com estoque baixo.
 
