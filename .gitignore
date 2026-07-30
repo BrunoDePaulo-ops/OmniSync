@@ -1,0 +1,24 @@
+# Arquivos compilados
+bin/
+*.class
+
+# Dependências (JARs)
+lib/*.jar
+!lib/.gitkeep
+
+# Arquivos gerados
+reports/
+logs/
+
+# Configurações do VS Code
+.vscode/
+!.vscode/settings.json.example
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos temporários
+*.tmp
+*.swp
+*.bak
