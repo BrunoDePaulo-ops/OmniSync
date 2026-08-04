@@ -2,13 +2,10 @@
 bin/
 *.class
 
-# Dependências (JARs)
-lib/*.jar
-!lib/.gitkeep
-
 # Arquivos gerados
 reports/
 logs/
+exports/
 
 # Configurações do VS Code
 .vscode/

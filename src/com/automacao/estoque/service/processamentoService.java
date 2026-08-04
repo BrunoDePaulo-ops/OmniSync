@@ -13,11 +13,13 @@ public class processamentoService {
     private excelService excelService;
     private produtoDAO produtoDAO;
     private PDFService pdfService;
+    
 
     public processamentoService() throws SQLException {
         this.excelService = new excelService();
         this.produtoDAO = new produtoDAO();
         this.pdfService = new PDFService(); 
+        
         
     }
 
@@ -47,10 +49,13 @@ public class processamentoService {
             // 3. Verificar estoque baixo (regra de negócio)
             verificarEstoqueBaixo(produtos);
 
+            
             String nomePDF = "relatorio_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".pdf";
             String caminho = "reports/" + nomePDF;
 
+            
             pdfService.gerarRelatorio(produtos, caminho);
+            
 
             System.out.println("✅ PROCESSAMENTO CONCLUÍDO!");
             return produtos.size();

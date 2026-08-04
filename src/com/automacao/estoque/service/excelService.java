@@ -33,6 +33,8 @@ public class excelService {
                     p.setQuantidadeEstoque(getIntValue(linha.getCell(5)));
                     p.setEstoqueMinimo(getIntValue(linha.getCell(6)));
 
+                    System.out.println("   📊 Produto: " + p.getCodigo() + " | Quantidade LIDA: " + p.getQuantidadeEstoque());
+
                     produtos.add(p);
                     System.out.println("  ✅ Lido: " + p.getCodigo() + " - " + p.getNome());
 

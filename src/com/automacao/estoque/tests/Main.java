@@ -2,12 +2,14 @@ package com.automacao.estoque.tests;
 
 import com.automacao.estoque.service.processamentoService;
 
+
 public class Main {
     public static void main(String[] args) {
         System.out.println("🚀 AutoStock Manager iniciado!");
         System.out.println("📌 Processando planilha: uploads/produtos.xlsx\n");
         
         try {
+            
             // 1. Criar o serviço de processamento
             processamentoService service = new processamentoService();
             
@@ -25,6 +27,8 @@ public class Main {
                 System.out.println("💡 Verifique se a planilha existe em: " + caminhoExcel);
             }
             System.out.println("=".repeat(50));
+            
+
             
         } catch (Exception e) {
             System.err.println("\n❌ ERRO FATAL: " + e.getMessage());
