@@ -63,13 +63,13 @@ public class processamentoService {
 
             listarMovimentacoes(produtos);
 
-            /* 
+            
             String nomePDF = "relatorio_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".pdf";
             String caminho = "reports/" + nomePDF;
 
             
             pdfService.gerarRelatorio(produtos, caminho);
-            */
+            
             System.out.println("✅ PROCESSAMENTO CONCLUÍDO!");
             return produtos.size();
 
