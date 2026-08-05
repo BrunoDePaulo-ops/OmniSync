@@ -8,10 +8,14 @@ public class Main {
         System.out.println("🚀 AutoStock Manager iniciado!");
         System.out.println("📌 Processando planilha: uploads/produtos.xlsx\n");
         
+        
+
         try {
-            
+            processamentoService.inicializarSistema();
             // 1. Criar o serviço de processamento
             processamentoService service = new processamentoService();
+
+
             
             // 2. Processar o arquivo Excel (isso vai ler, salvar e verificar estoque)
             String caminhoExcel = "uploads/produtos.xlsx";

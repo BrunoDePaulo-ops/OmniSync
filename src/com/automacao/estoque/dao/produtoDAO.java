@@ -8,41 +8,13 @@ import java.util.List;
 
 public class produtoDAO {
     private movimentacaoDAO movimentacaoDAO;
-    
-    private void criarTabelas() throws SQLException{
-        String sqlProdutos = """
-            CREATE TABLE IF NOT EXISTS produtos(
-            id SERIAL PRIMARY KEY,
-            codigo VARCHAR(50) UNIQUE NOT NULL,
-            nome VARCHAR(200) NOT NULL,
-            descricao TEXT,
-            categoria VARCHAR(100),
-            preco DECIMAL(10,2),
-            quantidade_estoque INTEGER DEFAULT 0,
-            estoque_minimo INTEGER DEFAULT 10,
-            data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            ultima_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            ativo BOOLEAN DEFAULT TRUE
-            )
-        """;
-
-        try(Connection conexao = conexaoDAO.abrirConexao(); Statement stmt = conexao.createStatement()){
-            stmt.execute(sqlProdutos);
-            System.out.println("Tabela de produtos criada com sucesso.");
-        }
-    }
 
     public produtoDAO(){
         this.movimentacaoDAO = new movimentacaoDAO();
-        try{
-            criarTabelas();
-        }catch(SQLException e){
-            System.err.println("Erro crítico: Não foi possível criar a tabela de movimentações.");
-            e.printStackTrace();
-        }
+        
     }
 
-    //Recebe a referência para uma lista de objetos do tipo Produto.
+    //Recebe a referência para uma lista de objetos do tipo Produto. 
     public void salvarEmLote(List<Produto> produtos) throws SQLException{
         String sqlCheck = "SELECT id, quantidade_estoque FROM produtos WHERE codigo = ?";
         String sqlInsert = "INSERT INTO produtos (codigo, nome, descricao, categoria, preco, quantidade_estoque, estoque_minimo) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -67,33 +39,36 @@ public class produtoDAO {
                     if (rs.next()){
                         Long idProd = rs.getLong("id");// Pega o ID do objeto no banco
                         int quantidade_antiga = rs.getInt("quantidade_estoque");// Pega a quantidade dele em estoque no banco. 
-                        int quantidade_nova = p.getQuantidadeEstoque();// Pega a quantidade dele da planilha (que será a qantidade nova).
+                        int quantidade_nova = p.getQuantidadeEstoque();// Pega a quantidade dele no objeto/planilha (que será a quantidade nova).
                         
                         String tipo = null;
+
                         if(quantidade_antiga !=  quantidade_nova){
                             if (quantidade_antiga < quantidade_nova){
                                 tipo = "Entrada";
                             }else if(quantidade_antiga > quantidade_nova){
                                 tipo = "Saída";
                             }
-
-                            int diferenca = Math.abs(quantidade_nova - quantidade_antiga);
-
-                            // Cria o objeto movimentação ANTES de atualizar. O objeto tem que refletir as mudanças. Se ele fosse criado depois da atualização ele nunca captaria as mudanças do produto.
-                            Movimentacao mov = new Movimentacao(
-                                idProd,
-                                tipo,
-                                diferenca,
-                                quantidade_antiga,
-                                quantidade_nova,
-                                "Excel"
-                            );
-
-                            listaMov.add(mov);
-                            System.out.println("   ✅ Movimentação criada: " + tipo + " de " + diferenca);
                         }else{
                             tipo = "Ajuste";
+                            System.out.println("Quantidade inalterada.");
                         }
+
+                        int diferenca = Math.abs(quantidade_nova - quantidade_antiga);
+
+                        // Cria o objeto movimentação ANTES de atualizar. O objeto tem que refletir as mudanças. Se ele fosse criado depois da atualização ele nunca captaria as mudanças do produto.
+                        Movimentacao mov = new Movimentacao(
+                            idProd,
+                            tipo,
+                            diferenca,
+                            quantidade_antiga,
+                            quantidade_nova,
+                            "Excel"
+                        );
+
+                        listaMov.add(mov);
+                        System.out.println("   ✅ Movimentação criada: " + tipo + " de " + diferenca);
+                        
                         pstmt3.setString(1, p.getNome());
                         pstmt3.setString(2, p.getDescricao());
                         pstmt3.setString(3, p.getcategoria());
@@ -105,7 +80,6 @@ public class produtoDAO {
 
                         totalAtualizados++;
                         
-
                     }else{
                         pstmt2.setString(1, p.getCodigo());
                         pstmt2.setString(2, p.getNome());

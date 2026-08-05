@@ -6,37 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class movimentacaoDAO {
-    
-    // Método criarTabelas privado. Só quem pode usar é um objeto do tipo da classe movimentacaoDAO.
-    private void criarTabelas() throws SQLException{
-        
-        String sqlMovimentacoes = """
-            CREATE TABLE IF NOT EXISTS movimentacoes(
-            id SERIAL PRIMARY KEY,
-            produto_id INTEGER REFERENCES produtos(id),
-            tipo VARCHAR(20) NOT NULL,
-            quantidade INTEGER NOT NULL,
-            quantidade_anterior INTEGER,
-            quantidade_nova INTEGER,
-            origem VARCHAR(50), -- EXCEL, MANUAL, SISTEMA
-            data_movimentacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-                    
-        """;
-        try(Connection conexao = conexaoDAO.abrirConexao(); Statement stmt = conexao.createStatement()){
-            stmt.execute(sqlMovimentacoes);
-            System.out.println("Tabela movimentações criada com sucesso.");
-        }
-    }
-    
-    public movimentacaoDAO(){
-        try{
-            criarTabelas();
-        }catch(SQLException e){
-            System.err.println("Erro crítico: Não foi possível criar a tabela de movimentações.");
-            e.printStackTrace();
-        }
-    }
+    // Cria o objeto movimentacaoDAO. Através desse objeto eu terei acesso aos métodos public da classe movimentacaoDAO.
+    public movimentacaoDAO(){}
 
     public void salvarMovimentacao(Movimentacao movimentacao) throws SQLException{
         String sqlSalvar = "INSERT INTO movimentacoes (produto_id, tipo, quantidade, quantidade_anterior, quantidade_nova, origem) VALUES (?, ?, ?, ?, ?, ?)";
@@ -94,6 +65,7 @@ public class movimentacaoDAO {
                 try(ResultSet rs = pstmt.executeQuery()){
                     while(rs.next()){
                         Movimentacao mov = new Movimentacao( 
+                            
                             rs.getLong("produto_id"),
                             rs.getString("tipo"),
                             rs.getInt("quantidade"),
@@ -102,6 +74,7 @@ public class movimentacaoDAO {
                             rs.getString("origem")
                             
                         );
+                        mov.setId(rs.getLong("id"));
                         movimentacoes.add(mov);
                     }
                     return movimentacoes;

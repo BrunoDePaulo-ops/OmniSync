@@ -11,13 +11,8 @@ public class conexaoDAO {
     private static String senha = "brunox123";
 
     public static Connection abrirConexao() throws SQLException{
-        try{
-            return DriverManager.getConnection(URL, usuario, senha);
-        }finally{
-            System.out.println("Fim da tentativa de conexão.");
-        }
+        return DriverManager.getConnection(URL, usuario, senha);
 
     }
-
 
 }

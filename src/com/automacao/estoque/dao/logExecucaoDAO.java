@@ -6,33 +6,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class logExecucaoDAO {
-    
-    private void criarTabelas() throws SQLException{
-        
-        String sqlLogs = """
-            CREATE TABLE IF NOT EXISTS registros(
-            id BIGSERIAL PRIMARY KEY,
-            tipo VARCHAR(50) NOT NULL,
-            mensagem TEXT,
-            detalhes JSONB,
-            data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            sucesso BOOLEAN DEFAULT TRUE
-            )
-        """;
 
-        try(Connection conexao = conexaoDAO.abrirConexao(); Statement stmt = conexao.createStatement()){
-            stmt.execute(sqlLogs);
-            System.out.println("Tabela de logs criada com sucesso.");
-        }
-    }
-
-    public logExecucaoDAO() throws SQLException{
-        try{
-            criarTabelas();
-        }finally{
-            System.out.println("Tentativa de criação da tabela de registros concluída.");
-        }
-    }
+    public logExecucaoDAO() {}
 
     public void gravarLogs(logExecucao logExecucao) throws SQLException{
         String sqlGravar = "INSERT INTO registros (tipo, mensagem, detalhes, sucesso) VALUES (?, ?, ?, ?)";
