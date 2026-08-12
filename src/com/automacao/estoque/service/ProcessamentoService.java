@@ -31,13 +31,11 @@ public class ProcessamentoService {
         
     }
     
-    private List<Produto> produtos = new ArrayList<>();
-    private logExecucao log;
-    private List<logExecucao> listaLogs = new ArrayList<>();
     
 
     public List<Produto> lerPlanilha(){
-        
+        List <Produto> produtos = new ArrayList<>();
+
         try{
             
             produtos = excelService.lerProduto("uploads/produtos.xlsx");
@@ -55,16 +53,7 @@ public class ProcessamentoService {
                 ); 
 
             }
-            // Criei outro construtor pois alguns atributos da classe virão do banco e do Java.
-            log = new logExecucao(
-                "Processamento",
-                "Leitura da planilha ",
-                "Leitura da planilha sem sincronização",
-                true
-
-            );
-
-            logExecucaoDAO.gravarLogs(log);
+        
             
         }catch(FileNotFoundException e){
             System.err.println("Erro: Arquivo 'produtos.xlsx' não foi encontrado na pasta 'uploads'.");
@@ -72,20 +61,14 @@ public class ProcessamentoService {
 
         }catch(IOException e){
             System.err.println("Erro de entrada/saída ao ler a planilha: " + e.getMessage());
-            e.printStackTrace();
-        }catch(SQLException e){
-            System.out.println("Erro ao gravar log no disco: " + e.getMessage());
-            try{
-                log = new logExecucao("Processamento", "Falha no processamento", "Erro ao tentar ler dados do banco", false);
-                logExecucaoDAO.gravarLogs(log);
-            }catch(SQLException ex){
-                 System.err.println("Erro ao salvar log de erro: " + ex.getMessage());
-            }
+            
         }
+        
         return produtos;
     }
 
     public void lerProdutosNoBanco(){
+        List <Produto> produtos = new ArrayList<>();
 
         try{
             produtos = produtoDAO.listarProdutos();
@@ -102,31 +85,60 @@ public class ProcessamentoService {
                 " | Estoque mínimo: " + p.getEstoqueMinimo() +
                 " | Estoque : " + p.isEstoqueBaixo()
                 ); 
+
             }
+            
+            
         }catch(SQLException e){
             System.out.println("Erro ao buscar produtos no banco: " + e.getMessage());
-            e.printStackTrace();
+            
         }
     }
 
     public void sincronizar(){
+        List <Produto> produtos = new ArrayList<>();
 
         produtos = lerPlanilha();
 
         try{
             produtoDAO.salvarEmLote(produtos);
             System.out.println("Dados sincronizados com sucesso.");
+
+            logExecucao log = new logExecucao(
+                "Sincronização", 
+                "Sincronização realizada com sucesso", 
+                "Sincronização entre planilha e banco", 
+                true
+            );
+
+            try{
+                logExecucaoDAO.gravarLogs(log);
+            }catch(SQLException e){
+                System.out.println("Erro ao realizar sincronização: " + e.getMessage());
+                
+                logExecucao logErro = new logExecucao(
+                    "Sincronização", 
+                    "Falha na sincronização", 
+                    "Erro ao gravar log de sincronização", 
+                    false
+                );
+
+                try{
+                    logExecucaoDAO.gravarLogs(logErro);
+                }catch(SQLException ex){
+                    System.err.println("Erro crítico: Não foi possível gravar o log de erro: " + ex.getMessage());
+                }
+
+            }
         }catch(SQLException e){
             System.out.println("Erro ao tentar sincronização: " + e.getMessage());
         }
 
-
-
-    
     }
 
     public void verificarEstoqueBaixo(){
         boolean baixo = false;
+        List <Produto> produtos = new ArrayList<>();
 
         try{
             produtos = excelService.lerProduto("uploads/produtos.xlsx");
@@ -153,7 +165,7 @@ public class ProcessamentoService {
     }
 
     public void emitirRelatorio(){
-
+        List <Produto> produtos = new ArrayList<>();
         try{
             String nomePDF = "relatorio_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".pdf";
             String caminho = "reports/" + nomePDF;
@@ -171,6 +183,7 @@ public class ProcessamentoService {
     }
 
     public void lerLogs(){
+        List <logExecucao> listaLogs = new ArrayList<>(); 
         try{
             listaLogs = logExecucaoDAO.listarTodos();
             
