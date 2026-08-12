@@ -21,6 +21,14 @@ public class logExecucao {
 
     }
 
+    public logExecucao(String tipo, String mensagem, String detalhes, boolean sucesso){
+        this.tipo = tipo;
+        this.mensagem = mensagem;
+        this.detalhes = detalhes;
+        this.sucesso = sucesso;
+        this.data = LocalDateTime.now();
+    }
+
     public Long getId(){
         return id;
     }

@@ -18,4 +18,6 @@ Thumbs.db
 # Arquivos temporários
 *.tmp
 *.swp
-*.bak
+*.baksrc/com/automacao/estoque/tests/Main.java
+src/com/automacao/estoque/tests/Main2.java
+src/com/automacao/estoque/service/processamentoService.java

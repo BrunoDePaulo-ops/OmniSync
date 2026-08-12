@@ -24,11 +24,13 @@ public class logExecucaoDAO {
                 
                     if(rs.next()){
                         long idMov = rs.getLong(1);
+                        // Está setando o id diretamente na classe não no construtor.
                         logExecucao.setId(idMov);
                     }
                 }
+                System.out.println(" ✅ Log gravado com sucesso no disco");
             }else{
-                System.out.println("Nenhuma linha foi adicionada.");   
+                System.out.println(" ⚠️ Nenhuma linha foi adicionada.");   
             }
 
         }
@@ -50,7 +52,7 @@ public class logExecucaoDAO {
                         rs.getString("tipo"),
                         rs.getString("mensagem"), 
                         rs.getString("detalhes"), 
-                        rs.getTimestamp("data").toLocalDateTime(),
+                        rs.getTimestamp("data_registro").toLocalDateTime(),
                         rs.getBoolean("sucesso")
                     );
                     lista.add(registro);
