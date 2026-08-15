@@ -45,53 +45,61 @@ java -version
 Abaixo está a organização das pastas e principais arquivos do sistema:
 
 ```
-auto_stock_manager/
+OmniSync/
 │
-├── .vscode/                         # Configurações do VS Code (não versionado)
-│   └── settings.json.example        # Exemplo de configuração para o VS Code
-│
-├── src/                             # Código fonte do projeto
+├── src/
 │   └── com/automacao/estoque/
-│       ├── dao/                     # Acesso a dados (CRUD)
-│       │   ├── ConexaoBD.java
-│       │   ├── ProdutoDAO.java
-│       │   └── MovimentacaoDAO.java
 │       │
-│       ├── model/                   # Entidades do sistema
-│       │   ├── Produto.java
-│       │   └── Movimentacao.java
+│       ├── dao/                           # Camada de Acesso a Dados
+│       │   ├── conexaoDAO.java            # Conexão com PostgreSQL
+│       │   ├── databaseInitializer.java   # Inicialização do banco
+│       │   ├── logExecucaoDAO.java        # CRUD de logs
+│       │   ├── movimentacaoDAO.java       # CRUD de movimentações
+│       │   └── produtoDAO.java            # CRUD de produtos
 │       │
-│       ├── service/                 # Regras de negócio
-│       │   ├── ExcelService.java
-│       │   ├── ProcessamentoService.java
-│       │   └── PDFService.java
+│       ├── model/                         # Entidades (Modelos)
+│       │   ├── logExecucao.java           # Modelo de log
+│       │   ├── Movimentacao.java          # Modelo de movimentação
+│       │   └── Produto.java               # Modelo de produto
 │       │
-│       ├── util/                    # Utilitários gerais
+│       ├── service/                       # Regras de Negócio
+│       │   ├── excelService.java          # Leitura de Excel (POI)
+│       │   ├── PDFService.java            # Geração de PDF (OpenPDF)
+│       │   ├── processamentoService.java  # Versão antiga (remover)
+│       │   └── ProcessamentoService.java  # ✅ Versão atual (principal)
 │       │
-│       ├── tests/                   # Testes manuais
-│       │   ├── Main.java
-│       │   ├── Main2.java
-│       │   └── TesteMovimentacoes.java
+│       ├── tests/                         # Testes manuais
+│       │   ├── CriarPlanilha.java         # Gera planilha de exemplo
+│       │   ├── Main.java                  # ✅ Ponto de entrada principal
+│       │   ├── Main2.java                 # Teste antigo (remover)
+│       │   ├── TesteMovimentacoes.java    # Teste de movimentações
+│       │   └── TesteMovimentacoesDAO.java # Teste do DAO
 │       │
-│       └── scheduler/               # (Reservado para agendamento futuro)
+│       ├── scheduler/                     # (Reservado para agendamentos)
+│       └── util/                          # Utilitários
 │
-├── lib/                             # Dependências (JARs) - não versionado
-│   └── *.jar
+├── lib/                                   # Dependências (JARs)
+│   ├── commons-collections4-4.4.jar
+│   ├── commons-compress-1.19.jar
+│   ├── ooxml-schemas-1.4.jar
+│   ├── openpdf-1.3.40.jar
+│   ├── poi-4.1.2.jar
+│   ├── poi-ooxml-4.1.2.jar
+│   ├── postgresql-42.7.13.jar
+│   └── xmlbeans-3.1.0.jar
 │
-├── uploads/                         # Planilhas de entrada
-│   └── produtos.xlsx
+├── uploads/                               # Planilhas de entrada
+│   └── produtos.xlsx                      # Exemplo de planilha
 │
-├── reports/                         # PDFs gerados pelo sistema
-│   └── relatorio_*.pdf
+├── reports/                               # PDFs gerados
+│   └── relatorio_*.pdf                    # Relatórios de estoque
 │
-├── logs/                            # Logs do sistema
-│   └── *.log
+├── assets/                                # Imagens do projeto
+│   └── fluxo-omnisync.png                 # Diagrama de fluxo
 │
-├── bin/                             # Arquivos compilados (.class) - ignorado
-│
-├── .gitignore
-├── README.md
-└── LICENSE
+├── .gitignore                             # Arquivos ignorados pelo Git
+├── README.md                              # Documentação
+└── LICENSE                                # (Opcional) Licença
 ```
 
 --- 
@@ -166,11 +174,48 @@ Abaixo estão as principais tecnologias, frameworks e bibliotecas utilizadas no 
 ---
 ### Como testar
 
-- Compilar o projeto
+- Clonar o repositório:
+```bash
+git clone https://github.com/BrunoDePaulo-ops/OmniSync.git
+cd OmniSync
+```
+
+- Criar e configurar o banco:
+```bash
+sudo -u postgres psql
+
+-- Criar o banco de dados:
+CREATE DATABASE autostock;
+
+-- Criar um usuário (opcional, mas recomendado):
+CREATE USER omniuser WITH PASSWORD 'omni2024';
+
+-- Dar permissões:
+GRANT ALL PRIVILEGES ON DATABASE autostock TO omniuser;
+
+-- Sair
+\q
+```
+- Configurar a conexão com o banco:
+```bash
+- Edite o arquivo src/com/automacao/estoque/dao/conexaoDAO.java e atualize com os dados do seu banco:
+
+  private static final String URL = "jdbc:postgresql://localhost:5432/autostock";
+  private static final String USUARIO = "omniuser";      // seu usuário
+  private static final String SENHA = "omni2024";        // sua senha
+```
+
+**⚠️ Nota**: O projeto já possui uma planilha base na pasta uploads. Se o usuário quiser criar outra, faça isso dentro desta pasta e altere a linha a seguir no ProcessamentoService.java:
+
+```bash
+produtos = excelService.lerProduto("uploads/NomeDaPlanilhaNovaAqui.xlsx"); //Alteração aqui!
+```
+
+- Compilar o projeto:
 ```bash
 javac -d bin -cp "lib/*" src/com/automacao/estoque/**/*.java
 ```
-- Executar o sistema
+- Executar o sistema:
 ```bash
 java -cp "lib/*:bin" com.automacao.estoque.tests.Main
 ```

@@ -89,11 +89,11 @@ public class movimentacaoDAO {
         Long id = null;
         
 
-        String sqlBusca = "SELECT id FROM produtos WHERE LOWER(TRIM(nome))= LOWER(TRIM(?))";
+        String sqlBusca = "SELECT id FROM produtos WHERE (LOWER(TRIM(nome))) LIKE (LOWER(TRIM(?)))";
         String sqlMov = "SELECT * FROM movimentacoes WHERE produto_id = ?";
         
         try(Connection conexao = conexaoDAO.abrirConexao(); PreparedStatement pstmt = conexao.prepareStatement(sqlBusca); PreparedStatement pstmt1 = conexao.prepareStatement(sqlMov) ){
-            pstmt.setString(1, nome);
+            pstmt.setString(1, "%" + nome + "%");
 
             ResultSet rs = pstmt.executeQuery();
             
