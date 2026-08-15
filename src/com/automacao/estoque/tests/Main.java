@@ -28,11 +28,12 @@ public class Main {
             System.out.println("4. Verificar se existem e quais são os produtos com estoque baixo. (Sincronize o sistema antes)");
             System.out.println("5. Emitir relatório em PDF. (Sincronize o sistema antes)");
             System.out.println("6. Verificar os logs gravados no sistema.");
+            System.out.println("7. Verificar as movimentações de um produto específico.");
             System.out.println("0. Sair\n");
 
             if(leitor.hasNextInt()){
                 numero = leitor.nextInt();
-                if (numero >= 0 && numero <= 6) {
+                if (numero >= 0 && numero <= 7) {
                     entradaValida = true; // Sai do laço while principal
                 } else {
                 System.out.println("\n[ERRO] O valor digitado está fora do intervalo (0 a 2). Tente novamente.");
@@ -49,6 +50,12 @@ public class Main {
             case 4 -> proc.verificarEstoqueBaixo();
             case 5 -> proc.emitirRelatorio();
             case 6 -> proc.lerLogs();
+            case 7 -> {
+                leitor.nextLine(); 
+                System.out.print("\nDigite o nome do produto: ");
+                String nomeProduto = leitor.nextLine(); 
+                proc.verMovimentacoesPorNomeDoProduto(nomeProduto); 
+            }
             case 0 -> System.out.println("Saindo da aplicação...\n");
 
         }

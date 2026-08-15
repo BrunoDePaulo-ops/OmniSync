@@ -4,6 +4,7 @@ import com.automacao.estoque.model.*;
 import com.automacao.estoque.dao.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.sql.SQLException;
 
 
@@ -16,6 +17,7 @@ public class TesteMovimentacoesDAO {
 
         try {
 
+            /* 
             List<Movimentacao> lista = new ArrayList<>();
                     lista = dao.listarMovimentacoesPorProduto("PROD001");
 
@@ -35,6 +37,25 @@ public class TesteMovimentacoesDAO {
                     System.out.println("Origem: " + m.getOrigem());
                 }
 
+            }
+            */
+            List<Movimentacao> mov = new ArrayList<>();
+            mov = dao.listarMovimentacoesPorNomeDoProduto("MONITOR LG");
+
+            if(mov == null || mov.isEmpty()){
+                System.out.println("Nenhuma movimentação encontrada.");
+            }else{
+                for (Movimentacao m : mov){
+        
+                    System.out.printf(" %10s | %-7s | %10s | %19s | %15s | %-6s%n",
+                    Objects.toString(m.getProdutoId(), "null"),
+                    Objects.toString(m.getTipo(), ""),
+                    Objects.toString(m.getQuantidade(), "0"),
+                    Objects.toString(m.getQuantidadeAnterior(), "0"),
+                    Objects.toString(m.getQuantidadeNova(), "0"),
+                    Objects.toString(m.getOrigem(), "")
+                    );
+                }
             }
 
         } catch (SQLException e) {

@@ -25,6 +25,7 @@ public class Movimentacao {
             this.origem = origem;
             this.dataMovimentacao = LocalDateTime.now();
     }
+
     // Getters e Setters
     public Long getId(){
         return id;

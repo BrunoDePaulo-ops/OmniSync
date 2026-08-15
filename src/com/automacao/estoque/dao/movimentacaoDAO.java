@@ -83,5 +83,57 @@ public class movimentacaoDAO {
         }
     }
 
+    public List<Movimentacao> listarMovimentacoesPorNomeDoProduto(String nome) throws SQLException{
+        List<Movimentacao> movimentacoes = new ArrayList<>();
+        Long idBanco = null;
+        Long id = null;
+        
+
+        String sqlBusca = "SELECT id FROM produtos WHERE LOWER(TRIM(nome))= LOWER(TRIM(?))";
+        String sqlMov = "SELECT * FROM movimentacoes WHERE produto_id = ?";
+        
+        try(Connection conexao = conexaoDAO.abrirConexao(); PreparedStatement pstmt = conexao.prepareStatement(sqlBusca); PreparedStatement pstmt1 = conexao.prepareStatement(sqlMov) ){
+            pstmt.setString(1, nome);
+
+            ResultSet rs = pstmt.executeQuery();
+            
+            if(rs.next()){
+                
+                idBanco = rs.getLong("id");
+                if(!rs.wasNull()){
+                    id = idBanco;                    
+                }
+                System.out.println("O id encontrado foi: " + id);
+                
+                pstmt1.setLong(1, id);
+                
+                ResultSet rs2 = pstmt1.executeQuery();
+                System.out.println("Busca executada para o id: " + id);
+
+                while(rs2.next()){
+                    
+                    Movimentacao movimentacao = new Movimentacao(
+                        rs2.getLong("produto_id"),
+                        rs2.getString("tipo"),
+                        rs2.getInt("quantidade"),
+                        rs2.getInt("quantidade_anterior"),
+                        rs2.getInt("quantidade_nova"),
+                        rs2.getString("origem")
+                        
+                    );
+
+                    movimentacao.setId(rs2.getLong("id"));
+                    movimentacoes.add(movimentacao);
+                    
+
+                }
+            }else{
+                System.out.println("O produto não está no banco de dados!");
+                return movimentacoes;
+            }
+        }
+        return movimentacoes;
+    }
+
 }
 

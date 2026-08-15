@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 
@@ -21,12 +22,14 @@ public class ProcessamentoService {
     private PDFService PDFService;
     private produtoDAO produtoDAO;
     private logExecucaoDAO logExecucaoDAO;
+    private movimentacaoDAO movimentacaoDAO;
     
     public ProcessamentoService(){
         this.excelService = new excelService();
         this.PDFService = new PDFService();
         this.produtoDAO = new produtoDAO();
         this.logExecucaoDAO = new logExecucaoDAO();
+        this.movimentacaoDAO = new movimentacaoDAO();
         
         
     }
@@ -146,7 +149,7 @@ public class ProcessamentoService {
             for (Produto p : produtos){
                 if(p.isEstoqueBaixo()){
                     baixo = true;
-                    System.out.println(" ⚠️ ALERTA: " + p.getNome() + 
+                    System.out.println("ALERTA: " + p.getNome() + 
                         " | Estoque: " + p.getQuantidadeEstoque() +
                         " | Mínimo: " + p.getEstoqueMinimo()
                     );
@@ -155,11 +158,10 @@ public class ProcessamentoService {
             }
 
             if(!baixo){
-                System.out.println("  ✅ O estoque está OK, pode dormir tranquilo.");
+                System.out.println("O estoque está OK, pode dormir tranquilo.");
             }
         }catch(IOException e){
             System.out.println("Erro ao ler arquivo: " + e.getMessage());
-            e.printStackTrace();
         }
 
     }
@@ -172,11 +174,11 @@ public class ProcessamentoService {
             
             produtos = excelService.lerProduto("uploads/produtos.xlsx");
             PDFService.gerarRelatorio(produtos, caminho);
-            System.out.println("  ✅ Relatório gerado com sucesso na pasta reports.");
+            System.out.println("Relatório gerado com sucesso na pasta reports.");
 
         }catch(IOException e){
             System.out.println("Erro ao ler arquivo: " + e.getMessage());
-            e.printStackTrace();
+            
         }catch(Exception e){
             System.out.println("Erro ao desenvolver relatório: " + e.getMessage());
         }
@@ -200,5 +202,36 @@ public class ProcessamentoService {
         }catch(SQLException e){
             System.out.println("Erro ao listar logs : " + e.getMessage() );
         }
+    }
+
+    public void verMovimentacoesPorNomeDoProduto(String nome){
+        List<Movimentacao> movimentacoes = new ArrayList<>();
+        
+
+        try{
+            movimentacoes = movimentacaoDAO.listarMovimentacoesPorNomeDoProduto(nome); 
+            if(movimentacoes == null || movimentacoes.isEmpty()){
+                System.out.println("Nenhuma movimentação encontrada.");
+                
+            }else{
+                System.out.println("Listando movimentações encontradas para o produto: " + nome);
+
+                for (Movimentacao m : movimentacoes){
+                    System.out.printf(" %10s | %-7s | %10s | %19s | %15s | %-6s%n",
+                    Objects.toString(m.getProdutoId(), "null"),
+                    Objects.toString(m.getTipo(), ""),
+                    Objects.toString(m.getQuantidade(), "0"),
+                    Objects.toString(m.getQuantidadeAnterior(), "0"),
+                    Objects.toString(m.getQuantidadeNova(), "0"),
+                    Objects.toString(m.getOrigem(), "")
+                    );
+   
+                }
+                System.out.println("O total de movimentações encontrada para o produto " + nome + ": " + movimentacoes.size());
+            }
+        }catch(SQLException e){
+            System.out.println("Erro ao buscar movimentações para o produto: " + nome );
+        }
+
     }
 }

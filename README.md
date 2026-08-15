@@ -39,32 +39,6 @@ Antes de executar o projeto, você precisa ter instalado:
 java -version
 
 ```
-### 2. Biblioteca Apache POI
-
-Baixe os seguintes JAR's e coloque na pasta lib: 
-```bash
-# Ler e editar dados em planilhas do Excel
-poi-4.1.2.jar
-poi-ooxml-4.1.2.jar
-xmlbeans-3.1.0.jar
-ooxml-schemas-1.4.jar
-commons-collections4-4.4.jar
-commons-compress-1.19.jar
-```
-
-### 3. Biblioteca OpenPDF 1.3.40
-
-Baixe a biblioteca e coloque na pasta lib:
-```bash
-openpdf-1.3.40.jar
-```
-
-### 4. Driver do JDBC PostgreSQL
-
-Baixe o driver do banco de dados e o adicione na pasta lib:
-```bash
-postgresql-42.7.13.jar
-```
 
 ## 📁 **Estrutura do Projeto**
 
@@ -120,9 +94,103 @@ auto_stock_manager/
 └── LICENSE
 ```
 
+--- 
 ## 🔧 Configuração do VS Code
 
-Caso use o VS Code, configure o projeto com:
+### 1. Caso use o VS Code, copie o arquivo de exemplo:
 
 ```bash
 cp .vscode/settings.json.example .vscode/settings.json
+```
+### 2. Recarregue o VSCode: 
+
+- **Pressione**: CRTL + Shift + P
+- **Digite**: Developer: Reload Window
+- **Pressione**: Enter
+
+
+⚠️ **Extensões recomendadas:** Instale as seguintes extensões para uma melhor experiência.
+
+```bash
+- Extension Pack For Java (Microsoft)
+- Language Suport For Java (Red Hat)
+```
+### 3. Estrutura do .vscode:
+
+```
+.vscode/
+├── settings.json.example   ← Exemplo de configuração (versionado)
+└── settings.json           ← Configuração local (NÃO versionado)
+```
+
+⚠️ **Importante:** O arquivo settings.json não é versionado no Git. Cada dev deve criar o seu a partir do exemplo que foi fornecido.
+
+### 4. Conteúdo do arquivo de exemplo:
+
+```
+{
+    "java.project.sourcePaths": [
+        "src"
+    ],
+    "java.project.referencedLibraries": [
+        "lib/*.jar"
+    ]
+}
+```
+- "src" → O VS Code vai procurar os arquivos .java na pasta src/
+- "lib/*.jar" → O VS Code vai adicionar todos os JARs da pasta lib/ ao classpath automaticamente
+
+___
+
+# 🛠️ Tecnologias Utilizadas
+
+Abaixo estão as principais tecnologias, frameworks e bibliotecas utilizadas no projeto:
+
+| Tecnologia | Versão | Finalidade |
+|------------|--------|------------|
+| **☕ Java** | 17+ | Linguagem de programação principal |
+| **🐘 PostgreSQL** | 15+ | Banco de dados relacional |
+| **📊 Apache POI** | 4.1.2 | Leitura e escrita de arquivos Excel (.xlsx) |
+| **📄 OpenPDF** | 1.3.40 | Geração de relatórios em PDF |
+| **🐙 Git** | - | Controle de versão |
+| **📦 GitHub** | - | Hospedagem do repositório |
+| **🖥️ VS Code** | - | Ambiente de desenvolvimento (opcional) |
+
+---
+## 📊 Fluxo do Sistema
+
+![Fluxo do OmniSync](assets/fluxo-omnisync.png)
+
+*Diagrama do fluxo principal do sistema OmniSync.*
+
+---
+### Como testar
+
+- Compilar o projeto
+```bash
+javac -d bin -cp "lib/*" src/com/automacao/estoque/**/*.java
+```
+- Executar o sistema
+```bash
+java -cp "lib/*:bin" com.automacao.estoque.tests.Main
+```
+- Após isso, você verá:
+
+```bash
+========== OMNISYNC - Sistema de Gerenciamento de Estoques ==========
+========== Menu ==========
+Digite um número para uma ação...
+
+1. Ler dados direto da planilha.
+2. Ler dados direto do banco.
+3. Sincronizar planilha, movimentações e banco.
+4. Verificar se existem e quais são os produtos com estoque baixo. (Sincronize o sistema antes)
+5. Emitir relatório em PDF (Sincronize o sistema antes).
+6. Verificar logs gravados no sistema.
+7. Verificar as movimentações de um produto específico.
+0. Sair.
+```
+
+
+
+
